@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teknik Defter — Maker Portfolyosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B1420;
+    --bg-panel:#101E30;
+    --bg-panel-2:#0D1826;
+    --line:#24374F;
+    --line-soft:#1A2A3E;
+    --cyan:#5CE1E6;
+    --amber:#F2A65A;
+    --text:#E8EEF5;
+    --muted:#7C93AD;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:38px 38px;
+    background-attachment:fixed;
+  }
+  a{color:var(--cyan);}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* --- Signature: schematic trace running down the page --- */
+  .trace-rail{
+    position:absolute;
+    left:50%;
+    transform:translateX(-540px);
+    top:0;
+    width:2px;
+    height:100%;
+    background:linear-gradient(var(--line), var(--line));
+    z-index:0;
+  }
+  .trace-rail::before{
+    content:'';
+    position:absolute;
+    top:0; left:-2px;
+    width:6px; height:140px;
+    background:linear-gradient(180deg, transparent, var(--cyan), transparent);
+    opacity:0.85;
+    animation:pulse-travel 7s linear infinite;
+  }
+  @keyframes pulse-travel{
+    0%{ top:-140px; }
+    100%{ top:100%; }
+  }
+  .node{
+    position:absolute;
+    left:-5px;
+    width:12px;height:12px;
+    border-radius:50%;
+    background:var(--bg-deep);
+    border:2px solid var(--cyan);
+  }
+  @media (max-width: 900px){
+    .trace-rail{ display:none; }
+  }
+
+  header.hero{
+    position:relative;
+    padding:110px 24px 90px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+  .designator{
+    font-family:var(--mono);
+    color:var(--amber);
+    font-size:0.85rem;
+    letter-spacing:0.12em;
+  }
+  h1.name{
+    font-family:var(--mono);
+    font-size:clamp(2.4rem, 6vw, 4.4rem);
+    font-weight:700;
+    margin:14px 0 6px;
+    letter-spacing:-0.01em;
+    color:var(--text);
+  }
+  .role-line{
+    font-family:var(--mono);
+    color:var(--cyan);
+    font-size:1.05rem;
+    margin-bottom:28px;
+  }
+  .role-line .cursor{
+    display:inline-block;
+    width:9px;height:1.1em;
+    background:var(--cyan);
+    margin-left:2px;
+    vertical-align:text-bottom;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .hero p.lede{
+    max-width:620px;
+    font-size:1.05rem;
+    color:var(--muted);
+  }
+  .terminal{
+    margin-top:38px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-family:var(--mono);
+    font-size:0.85rem;
+    max-width:620px;
+    overflow:hidden;
+  }
+  .terminal .bar{
+    display:flex; gap:6px;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel-2);
+  }
+  .terminal .dot{width:9px;height:9px;border-radius:50%;background:var(--line);}
+  .terminal .body{padding:16px 18px; color:var(--muted);}
+  .terminal .body .go{color:var(--cyan);}
+  .terminal .body .rem{color:var(--muted); opacity:0.75;}
+
+  section{
+    position:relative;
+    padding:80px 24px;
+    border-bottom:1px solid var(--line);
+    z-index:1;
+  }
+  .section-head{ margin-bottom:44px; }
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:clamp(1.5rem,3vw,2.1rem);
+    margin:8px 0 0;
+  }
+
+  /* About */
+  .about-grid{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap:48px;
+    align-items:start;
+  }
+  @media (max-width:800px){ .about-grid{grid-template-columns:1fr;} }
+  .quote-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--amber);
+    border-radius:6px;
+    padding:22px 24px;
+    font-family:var(--mono);
+    font-size:0.95rem;
+    color:var(--text);
+  }
+  .quote-card .src{
+    display:block; margin-top:14px;
+    color:var(--muted); font-size:0.75rem;
+  }
+  textarea.bio-edit{
+    width:100%;
+    min-height:140px;
+    background:transparent;
+    border:1px dashed var(--line);
+    border-radius:6px;
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:1rem;
+    padding:14px;
+    resize:vertical;
+  }
+  .edit-hint{
+    font-family:var(--mono);
+    font-size:0.7rem;
+    color:var(--amber);
+    margin-top:8px;
+  }
+
+  /* Journey / modules */
+  .module-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px,1fr));
+    gap:18px;
+  }
+  .module{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:20px;
+    position:relative;
+    transition:border-color .2s, transform .2s;
+  }
+  .module:hover{ border-color:var(--cyan); transform:translateY(-3px); }
+  .module .ref{
+    font-family:var(--mono);
+    color:var(--amber);
+    font-size:0.75rem;
+    letter-spacing:0.08em;
+  }
+  .module h3{
+    font-family:var(--mono);
+    font-size:1.05rem;
+    margin:6px 0 10px;
+  }
+  .module p{ color:var(--muted); font-size:0.92rem; margin:0; }
+  .module .tag{
+    display:inline-block;
+    margin-top:12px;
+    font-family:var(--mono);
+    font-size:0.68rem;
+    color:var(--cyan);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:3px 10px;
+  }
+
+  /* Skill block: skill description + its own project(s) nested together */
+  .skill-block{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:26px 28px;
+    margin-bottom:22px;
+  }
+  .skill-block-header{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .skill-block-header .ref{
+    font-family:var(--mono); color:var(--amber);
+    font-size:0.8rem; letter-spacing:0.08em;
+  }
+  .skill-block-header h3{
+    font-family:var(--mono);
+    font-size:1.2rem;
+    margin:0;
+  }
+  .skill-block-header .tag{
+    font-family:var(--mono);
+    font-size:0.68rem;
+    color:var(--cyan);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:3px 10px;
+  }
+  .skill-block > p.desc{ color:var(--muted); margin:0 0 22px; }
+  .skill-project{
+    border-top:1px dashed var(--line-soft);
+    padding-top:20px;
+    margin-top:6px;
+  }
+  .skill-project + .skill-project{ margin-top:20px; }
+  .skill-project .proj-label{
+    font-family:var(--mono);
+    color:var(--amber);
+    font-size:0.7rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .skill-project .project{ border-top:none; padding:0; }
+  .skill-project h4{ font-family:var(--mono); font-size:1.05rem; margin:0 0 10px; }
+  @media (max-width:760px){
+    .skill-project .project{ grid-template-columns:1fr; }
+  }
+
+  /* Projects */
+  .project{
+    display:grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap:36px;
+    align-items:center;
+    padding:34px 0;
+    border-top:1px solid var(--line-soft);
+  }
+  .project:first-of-type{ border-top:none; }
+  @media (max-width:760px){ .project{grid-template-columns:1fr;} }
+  .project .stage{
+    font-family:var(--mono);
+    color:var(--muted);
+    font-size:0.75rem;
+    letter-spacing:0.1em;
+    margin-bottom:6px;
+  }
+  .project h3{ font-family:var(--mono); font-size:1.3rem; margin:0 0 10px; }
+  .project p{ color:var(--muted); margin:0 0 12px; }
+  .project ul{ margin:0; padding-left:18px; color:var(--muted); font-size:0.92rem;}
+  .demo-frame{
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    aspect-ratio:16/10;
+  }
+  .demo-frame canvas{ width:100%; height:100%; display:block; cursor:crosshair; }
+  .demo-frame .caption{
+    font-family:var(--mono);
+    font-size:0.7rem;
+    color:var(--muted);
+    padding:8px 12px;
+    border-top:1px solid var(--line);
+  }
+  .code-peek{
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:var(--mono);
+    font-size:0.78rem;
+    color:var(--muted);
+    padding:16px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .photo-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+  }
+  @media (max-width:700px){ .photo-strip{grid-template-columns:1fr;} }
+  .photo-strip figure{ margin:0; }
+  .photo-strip img{
+    width:100%; height:180px; object-fit:cover;
+    border-radius:8px; border:1px solid var(--line);
+    display:block;
+  }
+  .photo-strip figcaption{
+    font-family:var(--mono);
+    font-size:0.7rem;
+    color:var(--muted);
+    margin-top:6px;
+  }
+
+  /* Workflow */
+  .flow{
+    display:flex; flex-wrap:wrap; gap:0;
+    align-items:stretch;
+  }
+  .flow .step{
+    flex:1 1 200px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    padding:20px;
+    position:relative;
+  }
+  .flow .step + .step{ border-left:none; }
+  .flow .step .n{ font-family:var(--mono); color:var(--amber); font-size:0.8rem;}
+  .flow .step h4{ font-family:var(--mono); margin:8px 0; font-size:0.98rem;}
+  .flow .step p{ color:var(--muted); font-size:0.85rem; margin:0;}
+  .flow code{
+    display:block; margin-top:10px;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:4px;
+    padding:8px 10px;
+    color:var(--cyan);
+    font-size:0.76rem;
+  }
+
+  footer{
+    padding:60px 24px 80px;
+    text-align:center;
+  }
+  footer .links a{
+    font-family:var(--mono);
+    margin:0 12px;
+    text-decoration:none;
+    border-bottom:1px solid var(--line);
+    padding-bottom:2px;
+  }
+  footer .links a:hover{ border-color:var(--cyan); }
+  footer .fine{ color:var(--muted); font-size:0.78rem; margin-top:20px; font-family:var(--mono);}
+
+  ::selection{ background:var(--cyan); color:var(--bg-deep); }
+  a:focus-visible, .module:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .trace-rail::before{ animation:none; }
+    .role-line .cursor{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="designator">U0 // BAŞLIK BLOĞU</div>
+    <h1 class="name">Esmanur Çaça</h1>
+    <div class="role-line">&gt; Gençlik Merkezi · Bilişim Sınıfı · 3D / Oyun Motorları / Kod / WebAR<span class="cursor"></span></div>
+    <p class="lede">Blender'da bir kupanın içini oyup, Godot'ta bir sinyali dinleyip, Python'da bir listeyi kesip, tarayıcıda gerçek dünyanın üstüne 3D model bindiren; öğrendiğini elinde tuttuğu kadar GitHub'da da saklayan bir teknik defter.</p>
+    <div class="terminal">
+      <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="body"><span class="rem"># bugüne kadarki çalışma günlüğü</span><br>
+      <span class="go">$</span> git log --oneline --all<br>
+      f3a9c1 Tinkercad devre prototipi eklendi<br>
+      d81e02 WebAR: image tracking + video overlay<br>
+      c40b7a Godot: Area3D sinyali ile toplama mekaniği<br>
+      a11f5e Blender: ilk kahve kupası modeli<br>
+      <span class="go">$</span> _</div>
+    </div>
+  </div>
+</header>
+
+<div class="trace-rail" aria-hidden="true"></div>
+
+<section id="hakkimda">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">01 · Hakkımda</div>
+      <h2>Piksellerden gerçek dünyaya</h2>
+    </div>
+    <div class="about-grid">
+      <div>
+        <p style="color:var(--muted); margin-bottom:14px;">Merhaba, ben Esmanur. Gençlik Merkezi Bilişim sınıfında, ekrandaki bir küpü kupaya, bir sinyali oyun mekaniğine, bir kod satırını tarayıcıda gezen bir 3D modele dönüştürmeyi öğreniyorum. Bu sayfa; Blender'da aldığım ilk şekli, dört farklı oyun motorunda kurduğum ilk mekanikleri, Python ve C#'ta yazdığım ilk programları, tarayıcıyı gerçek dünyaya açan WebAR denememi ve VS Code'dan GitHub'a uzanan sürüm kontrolü alışkanlığımı bir araya topladığım kişisel teknik defterim.</p>
+        <p style="color:var(--muted); margin-bottom:14px;">Her araç kendi diliyle konuşuyor olsa da altında hep aynı üç işlem yatıyor: bir şeyi <strong>kesmek</strong> (Blender'da Loop Cut, Python'da slicing), iki parçayı <strong>birleştirmek</strong> (Bridge Edge Loops, string interpolation) ve gereksiz olanı <strong>silmek</strong> (Boolean ile delik açmak, <code>.remove()</code> ile listeden çıkarmak). Bu benzerliği fark ettikten sonra yeni bir motor ya da dil öğrenmek, sıfırdan başlamak değil, aynı mantığı yeni bir sözdizimine taşımak oluyor.</p>
+        <p style="color:var(--muted);">Aşağıdaki bölümlerde her araç için hem arayüz/temel kavramları hem de üzerinde çalıştığım ilk projeyi kod/adım adım paylaşıyorum.</p>
+      </div>
+      <div class="quote-card">
+        “Benim için web, sadece iki boyutlu piksellerden ibaret bir ekran değil; gerçek dünyayla etkileşime giren, yaşayan bir arayüz. Mind-AR, A-Frame ve Three.js kullanarak geliştirdiğim WebAR projelerinde, 3D modelleri ve interaktif içerikleri tarayıcı üzerinden odanıza getiriyorum.”
+        <span class="src">— WebAR projesi motto'su</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="yolculuk">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">02 · Bileşenler ve Uygulamalar</div>
+      <h2>Öğrenme yolculuğu</h2>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U1</span>
+        <h3>Blender</h3>
+        <span class="tag">3D Modelleme</span>
+      </div>
+      <p class="desc">3D Viewport'ta X (kırmızı), Y (yeşil), Z (mavi) eksenleri; G/R/S ile taşı-döndür-ölçekle. Edit Mode'da vertex/edge/face seçimi, Extrude, Inset ve Loop Cut ile topoloji şekillendirme.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>Kahve Kupası Modelleme</h4>
+            <p>Bir silindiri, Edit Mode'da Inset ile duvar kalınlığı bırakıp Extrude ile içini oyarak kupaya dönüştürdüm. Gövdeye iki Loop Cut atıp aradaki yüzeyleri dışarı uzatarak ve Bridge Edge Loops ile birleştirerek kulpu oluşturdum; son olarak Shade Smooth ve Subdivision Surface ile yüzeyi pürüzsüzleştirdim.</p>
+          </div>
+          <div class="code-peek">1. Küpü sil (X) → Shift+A → Mesh → Cylinder ekle
+2. Tab: Edit Mode, üst yüzeyi seç (tuş 3)
+3. I (Inset): duvar kalınlığı için içeri pay bırak
+4. E (Extrude): aşağı it, kupanın içini oy
+5. Ctrl+R: gövdeye iki yatay Loop Cut at
+6. Aradaki yüzeyi E ile dışarı uzat (kulp kolu)
+7. Uçları X → Faces ile sil, kenarları F ile birleştir
+   (veya sağ tık → Bridge Edge Loops)
+8. Tab: Object Mode → sağ tık → Shade Smooth
+9. Modifier → Subdivision Surface ekle</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U2</span>
+        <h3>Unity</h3>
+        <span class="tag">Oyun Motoru</span>
+      </div>
+      <p class="desc">Hierarchy / Inspector / Project üçlüsü, Parent-Child transform ilişkisi. Rigidbody yerçekimini yönetir, Collider katı sınırları belirler; Is Trigger işaretlenince obje katılığını kaybedip bir algılayıcıya dönüşür.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>Altın Toplama Sistemi</h4>
+            <p>Zemine bir Rigidbody eklenmiş küre (oyuncu), üzerine yürüdüğünde toplanan bir küp (altın). Altının Box Collider'ında Is Trigger işaretlenince, katı bir cisim olmaktan çıkıp bir algılayıcıya dönüşüyor; aşağıdaki script bu algılayıcıyı dinliyor.</p>
+          </div>
+          <div class="code-peek">using UnityEngine;
+
+public class CoinCollector : MonoBehaviour
+{
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Altın Toplandı!");
+            Destroy(gameObject);
+        }
+    }
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U3</span>
+        <h3>Unreal Engine</h3>
+        <span class="tag">Oyun Motoru</span>
+      </div>
+      <p class="desc">Sahnedeki her şey bir Actor; içine Static Mesh ve Collision Component gibi bileşenler eklenir. Blueprint, düğümleri (node) birbirine bağlayarak kod yazmadan mantık kurmayı sağlar.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>Zıplama Rampası (Jump Pad)</h4>
+            <p>Box Collision'ın Begin Overlap olayını, Cast To Character üzerinden Launch Character düğümüne bağlayarak, rampaya basan karakteri yukarı fırlatan bir Blueprint kurdum.</p>
+          </div>
+          <div class="code-peek">1. BP_JumpPad adında bir Actor Blueprint oluştur
+2. İçine bir Cube (rampa) ve bir Box Collision (tetikleyici) ekle
+3. Box Collision → Details → "On Component Begin Overlap" (+)
+4. Event Graph'ta bağla:
+   On Component Begin Overlap → (Other Actor) → Cast To Character
+   Cast To Character (Success) → Launch Character
+5. Launch Character → Launch Velocity Z = 1500
+6. Compile, Save, sahneye sürükle</div>
+        </div>
+      </div>
+      <div class="skill-project">
+        <div class="proj-label">Ek Proje — Materyal Editörü</div>
+        <div class="project">
+          <div>
+            <h4>Katmanlı Arazi Materyali</h4>
+            <p>Düğüm tabanlı materyal grafiğinde; yükseklik (Height) ve eğim (Angle/Normal) verilerini Lerp düğümleriyle karşılaştırarak kar, kaya ve çim dokularının birbirine yumuşak geçiş yaptığı bir arazi shader'ı kurdum. Sağdaki panel, materyalin Base Color, Roughness ve Ambient Occlusion çıkışlarını gösteriyor.</p>
+          </div>
+          <div class="photo-strip" style="grid-template-columns:1fr;">
+            <figure>
+              <img src="assets/project-material-graph.jpg" alt="Unreal Engine materyal editörü düğüm grafiği" loading="lazy">
+              <figcaption>Unreal Engine materyal editörü — yükseklik/eğime göre katmanlanan arazi materyali</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U4</span>
+        <h3>Godot</h3>
+        <span class="tag">Oyun Motoru</span>
+      </div>
+      <p class="desc">Felsefesi: "her şey bir Node'dur, Node'lar birleşip Sahne olur." Area3D, StaticBody3D ve RigidBody3D ile fizik kurulur; sinyal (signal) sistemi bir olay gerçekleştiğinde diğer düğümlere haber uçurur.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>Alan Algılama Mekaniği</h4>
+            <p>Area3D düğümüne bağladığım body_entered sinyali, alana giren nesnenin ismini kontrol ediyor; oyuncu ise hedefe ulaşıldığını yazdırıp queue_free() ile kendini güvenli bir şekilde sahneden siliyor.</p>
+          </div>
+          <div class="code-peek">extends Area3D
+
+func _on_body_entered(body: Node3D) -> void:
+    if body.name == "Oyuncu":
+        print("Hedefe ulaşıldı!")
+        queue_free()</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U5</span>
+        <h3>Python</h3>
+        <span class="tag">Programlama</span>
+      </div>
+      <p class="desc">Değişkenler (string/int/float), [başlangıç:bitiş] ile slicing, .append() ile veri ekleme, .remove() ile veri silme. Kod yukarıdan aşağıya, satır satır okunur.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>Akıllı Görev Yöneticisi</h4>
+            <p>Bir görev listesi üzerinde dört temel işlemi canlı gösteren konsol uygulaması: <code>.append()</code> ile yeni görev ekleme, <code>[0:3]</code> ile ilk üç görevi dilimleyip acil listesi çıkarma, <code>.remove()</code> ile tamamlanan görevi silme.</p>
+          </div>
+          <div class="code-peek">gorev_listesi = ["Blender Modeli Yap", "WebAR Kodunu Düzenle", "Unity Sahnesi Kur", "Kitap Oku"]
+
+# Yapıştırma (Append)
+gorev_listesi.append("Python Script Yaz")
+
+# Kesme / Dilimleme (Slicing) — 0,1,2. index alınır
+acil_gorevler = gorev_listesi[0:3]
+
+# Delik Açma / Silme (Remove)
+gorev_listesi.remove("Kitap Oku")</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U6</span>
+        <h3>C#</h3>
+        <span class="tag">Programlama</span>
+      </div>
+      <p class="desc">Tip güvenli değişkenler (string/int/float/bool), $"..." ile string interpolation, Substring(başlangıç, uzunluk) ile dilimleme. List&lt;T&gt; üzerinde Add, GetRange ve Remove ile veri yönetimi.</p>
+      <div class="skill-project">
+        <div class="proj-label">İlk Proje</div>
+        <div class="project">
+          <div>
+            <h4>RPG Envanter Sistemi</h4>
+            <p>Tip güvenli bir <code>List&lt;string&gt;</code> üzerinde eşya ekleme (<code>Add</code>), ilk iki eşyayı alt küme olarak kuşanma (<code>GetRange</code>) ve kırılan/kullanılan bir eşyayı silme (<code>Remove</code>) mantığını özetleyen konsol projesi.</p>
+          </div>
+          <div class="code-peek">List&lt;string&gt; envanter = new List&lt;string&gt; { "Kılıç", "Kalkan", "İksir", "Altın Anahtar" };
+
+// Yapıştırma
+envanter.Add("Büyülü Asa");
+
+// Kesme — ilk 2 eşyayı kuşan
+List&lt;string&gt; kusanilanlar = envanter.GetRange(0, 2);
+
+// Delik Açma / Silme
+envanter.Remove("Kalkan");</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U7</span>
+        <h3>JavaScript · WebAR</h3>
+        <span class="tag">Web · AR</span>
+      </div>
+      <p class="desc">Canvas + 2D context ile parçacık sınıfı (pozisyon, hız, ömür, shadowBlur ile neon parıltı) ve requestAnimationFrame döngüsü. Mind-AR, A-Frame ve Three.js ile tarayıcıda görsel takibi (image tracking), 3D model ve video overlay; kamera erişimi uygulama indirmeden çalışır.</p>
+      <div class="skill-project">
+        <div class="proj-label">Canlı Demo</div>
+        <div class="project">
+          <div>
+            <h4>Sihirli Samuray Parçacıkları</h4>
+            <p>Fareni aşağıdaki kutunun içinde gezdir: her hareket, <code>Parcacik</code> sınıfından 3 yeni enerji küresi üretiyor. Her küre rastgele bir renk paleti, rastgele bir X/Y hızı ve <code>shadowBlur: 25</code> ile parlayan bir neon halesi taşıyor; boyutu her karede 0.12 küçülerek sönümleniyor.</p>
+            <ul>
+              <li>Canvas + 2D context, requestAnimationFrame ile saniyede 60 kare</li>
+              <li>Parçacık sınıfı: pozisyon, hız (hizX/hizY), boyut, renk</li>
+              <li>Kuyruk izi: ekranı her karede %8 opaklıkta siyahla kaplama</li>
+            </ul>
+          </div>
+          <div class="demo-frame">
+            <canvas id="particleCanvas"></canvas>
+            <div class="caption">fareni kutunun içinde gezdir → 3 parçacık/hareket, shadowBlur 25</div>
+          </div>
+        </div>
+      </div>
+      <div class="skill-project">
+        <div class="proj-label">Ek Proje — WebAR</div>
+        <div class="project">
+          <div>
+            <h4>Pikselden Gerçekliğe Uzanan Portal</h4>
+            <p>Web sadece iki boyutlu bir ekran değil, gerçek dünyayla etkileşime giren bir portal: kullanıcı hiçbir uygulama indirmeden, sadece tarayıcı ve kamerayla 3D içeriğe erişiyor. Blender'da modellediğim tasarımları <code>.glb</code>/<code>.fbx</code> formatında optimize ettim.</p>
+            <ul>
+              <li>Görsel takibi (image tracking) ile tetiklenen içerik</li>
+              <li>3D model + doku (texture) uyarlama, PBR ışık dengesi</li>
+              <li>GitHub Pages'te yayınlanan sayfayı QR koda bağlayıp, sergide okutulan afişten AR deneyimine yönlendirme</li>
+            </ul>
+          </div>
+          <div class="code-peek">&lt;script src="https://aframe.io/releases/1.x/aframe.min.js"&gt;&lt;/script&gt;
+&lt;script src="mindar-image-aframe.prod.js"&gt;&lt;/script&gt;
+
+&lt;a-scene mindar-image="imageTargetSrc: targets.mind"&gt;
+  &lt;a-assets&gt;
+    &lt;a-asset-item id="model" src="model.glb"&gt;&lt;/a-asset-item&gt;
+  &lt;/a-assets&gt;
+  &lt;a-camera /&gt;
+  &lt;a-entity mindar-image-target="targetIndex: 0"&gt;
+    &lt;a-gltf-model src="#model"&gt;&lt;/a-gltf-model&gt;
+  &lt;/a-entity&gt;
+&lt;/a-scene&gt;</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U8</span>
+        <h3>Pixel Art</h3>
+        <span class="tag">Grafik Tasarım</span>
+      </div>
+      <p class="desc">Oyun arayüzleri için piksel piksel ikon tasarımı; küçük çözünürlükte okunaklı, karakterli görsel dil kurma.</p>
+      <div class="skill-project">
+        <div class="proj-label">Proje</div>
+        <div class="project">
+          <div>
+            <h4>Piksel Sanatı: Hesap Makinesi İkonu</h4>
+            <p>Sınırlı piksel alanında okunaklı bir arayüz tasarlama alıştırması: kalın siyah kontur, yumuşak menekşe tonları ve her tuşun altına düşen ince gölgeyle üç boyutlu bir "basılabilir tuş" hissi verdim.</p>
+          </div>
+          <div class="photo-strip" style="grid-template-columns:1fr;">
+            <figure>
+              <img src="assets/project-pixel-calculator.jpg" alt="Piksel sanatı hesap makinesi ikonu" loading="lazy">
+              <figcaption>Piksel sanatı — hesap makinesi arayüz ikonu</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U9</span>
+        <h3>Python — OOP</h3>
+        <span class="tag">Algoritma</span>
+      </div>
+      <p class="desc">Fonksiyon ve döngülerden Nesne Tabanlı Programlamaya (Class, Object, Inheritance, Polymorphism) geçiş.</p>
+      <div class="skill-project">
+        <div class="proj-label">Proje</div>
+        <div class="project">
+          <div>
+            <h4>Oyun Karakteri Sınıf Hiyerarşisi</h4>
+            <p>Bir <code>Karakter</code> temel sınıfı can ve saldırı gücünü tutuyor; ondan türeyen <code>Dusman</code> sınıfı aynı <code>saldir()</code> metodunu kendi mantığıyla eziyor (override) — polimorfizmi kendi oyun sistemimde deneyimledim.</p>
+          </div>
+          <div class="code-peek">class Karakter:
+    def __init__(self, isim, can, guc):
+        self.isim = isim
+        self.can = can
+        self.guc = guc
+
+    def saldir(self, hedef):
+        hedef.can -= self.guc
+        print(f"{self.isim}, {hedef.isim}'e {self.guc} hasar verdi.")
+
+class Dusman(Karakter):
+    def saldir(self, hedef):
+        print(f"{self.isim} pusudan saldırıyor!")
+        super().saldir(hedef)
+
+oyuncu = Karakter("Esmanur", can=100, guc=15)
+goblin = Dusman("Goblin", can=40, guc=8)
+goblin.saldir(oyuncu)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U10</span>
+        <h3>3D Baskı &amp; Ters Mühendislik</h3>
+        <span class="tag">Üretim Hattı</span>
+      </div>
+      <p class="desc">Blender'da modellenen ya da taranan bir nesnenin dijital hatalarını (delik, çakışan yüzey) düzeltip 3D yazıcıya hazır hale getirme; ortaya çıkan fiziksel objenin dijital ikizini Unity'de C# ile etkileşimli hale getirme.</p>
+      <div class="skill-project">
+        <div class="proj-label">Proje</div>
+        <div class="project">
+          <div>
+            <h4>Fiziksel Prototipten Oyun İçi Nesneye</h4>
+            <p>Aynı model, elimdeki fiziksel çıktının "dijital ikizi" olarak Unity'e aktarılıyor; aşağıdaki script, oyuncu bu nesneye çarptığında basit bir fizik tepkisi üretiyor — fiziksel üretim ile kod tabanlı etkileşimi tek bir hatta birleştiren adım burası.</p>
+          </div>
+          <div class="code-peek">using UnityEngine;
+
+public class DijitalIkizEtkilesim : MonoBehaviour
+{
+    public float itmeGucu = 5f;
+
+    private void OnCollisionEnter(Collision cerpisme)
+    {
+        Rigidbody rb = cerpisme.rigidbody;
+        if (rb != null)
+        {
+            Vector3 yon = cerpisme.transform.position - transform.position;
+            rb.AddForce(yon.normalized * itmeGucu, ForceMode.Impulse);
+        }
+    }
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-block">
+      <div class="skill-block-header">
+        <span class="ref">U11</span>
+        <h3>Git &amp; GitHub</h3>
+        <span class="tag">Sürüm Kontrolü</span>
+      </div>
+      <p class="desc">git init ile projeyi tanıtma, git remote add origin ile uzak depoya bağlama. Her değişiklikte git add . → git commit -m "..." → git push -u origin main döngüsü. Kod, bilgisayar bozulsa bile GitHub'da güvende kalır. Aşağıdaki bölümde bu döngünün tüm adımlarını bulabilirsin.</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">04 · Sürüm Kontrolü</div>
+      <h2>VS Code → Git → GitHub</h2>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <div class="n">00</div>
+        <h4>Bağla</h4>
+        <p>Klasörü Git'e tanıt, GitHub'daki uzak depoyu bağla (bir kez yapılır).</p>
+        <code>git init
+git remote add origin
+  https://github.com/kullanici/depo.git</code>
+      </div>
+      <div class="step">
+        <div class="n">01</div>
+        <h4>Sepete Ekle</h4>
+        <p>Klasördeki tüm yeni kodları ve değişiklikleri işaretle.</p>
+        <code>git add .</code>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h4>Mühürle</h4>
+        <p>Değişikliklere açıklayıcı bir isim ver, geçmişe not düş.</p>
+        <code>git commit -m "..."</code>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h4>Gönder</h4>
+        <p>Mühürlü paketi GitHub'daki ana dala güvenle yükle.</p>
+        <code>git push -u origin main</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="eyebrow">05 · İletişim</div>
+  <div class="links" style="margin-top:14px; display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+    <a href="https://github.com/esmanurcaca" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px;">
+      <img src="assets/github-logo.jpg" alt="GitHub logosu" style="width:22px; height:22px; object-fit:contain; border-radius:4px;">
+      GitHub
+    </a>
+    <a href="mailto:esmanur.caca@example.com">E-posta</a>
+  </div>
+
+  <div class="qr-card" style="max-width:220px; margin:32px auto 0; background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:18px;">
+    <img src="assets/github-qr.png" alt="GitHub profiline QR kod" style="width:100%; border-radius:6px; display:block;">
+    <div class="eyebrow" style="margin-top:10px;">QR ile GitHub'a git</div>
+  </div>
+
+  <div class="fine">Bu sayfa GitHub Pages üzerinde barındırılmak için hazırlandı. GitHub kullanıcı adını, e-posta adresini ve QR kodun hedef adresini kendi bilgilerinle değiştirmen yeterli — QR şu an genel github.com adresine gidiyor, kendi profil linkinle yeniden oluşturursan sergi/kartvizit için de kullanılabilir.</div>
+</footer>
+
+<script>
+  // Signature trace nodes: one per section
+  document.querySelectorAll('section, header.hero').forEach((sec)=>{
+    const rail = document.querySelector('.trace-rail');
+    if(!rail) return;
+    const node = document.createElement('div');
+    node.className = 'node';
+    const rect = sec.getBoundingClientRect();
+    node.style.top = (sec.offsetTop + 40) + 'px';
+    rail.appendChild(node);
+  });
+
+  // Samuray parçacık demosu — kendi canvas/kutusuna kapsanmış
+  (function(){
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = canvas.parentElement;
+
+    function resize(){
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight - 28; // altyazıya yer bırak
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const parcalar = [];
+    const renkPaleti = ['#ff0055', '#ff55bb', '#ffcc00', '#00ffcc', '#9900ff'];
+    const fare = { x: canvas.width/2, y: canvas.height/2 };
+
+    canvas.addEventListener('mousemove', function(e){
+      const r = canvas.getBoundingClientRect();
+      fare.x = e.clientX - r.left;
+      fare.y = e.clientY - r.top;
+      for (let i = 0; i < 3; i++) parcalar.push(new Parcacik());
+    });
+    canvas.addEventListener('touchmove', function(e){
+      const r = canvas.getBoundingClientRect();
+      const t = e.touches[0];
+      fare.x = t.clientX - r.left;
+      fare.y = t.clientY - r.top;
+      for (let i = 0; i < 3; i++) parcalar.push(new Parcacik());
+      e.preventDefault();
+    }, {passive:false});
+
+    class Parcacik {
+      constructor() {
+        this.x = fare.x;
+        this.y = fare.y;
+        this.boyut = Math.random() * 12 + 6;
+        this.hizX = Math.random() * 4 - 2;
+        this.hizY = Math.random() * 4 - 2;
+        this.renk = renkPaleti[Math.floor(Math.random() * renkPaleti.length)];
+      }
+      update() {
+        this.x += this.hizX;
+        this.y += this.hizY;
+        if (this.boyut > 0.2) this.boyut -= 0.12;
+      }
+      draw() {
+        ctx.fillStyle = this.renk;
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = this.renk;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.boyut, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // kutu boşken de birkaç parçacık serp
+    for (let i=0;i<12;i++){ fare.x = canvas.width*Math.random(); fare.y = canvas.height*Math.random(); parcalar.push(new Parcacik()); }
+    fare.x = canvas.width/2; fare.y = canvas.height/2;
+
+    function render() {
+      ctx.fillStyle = 'rgba(13, 24, 38, 0.08)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < parcalar.length; i++) {
+        parcalar[i].update();
+        parcalar[i].draw();
+        if (parcalar[i].boyut <= 0.3) {
+          parcalar.splice(i, 1);
+          i--;
+        }
+      }
+      requestAnimationFrame(render);
+    }
+    render();
+  })();
+</script>
+
+</body>
+</html>
